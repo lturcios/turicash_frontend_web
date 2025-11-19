@@ -1,0 +1,32 @@
+# Set .gitignore to ignore local environment files
+.env.local
+.env.development.local
+
+# Ignore node modules
+node_modules/
+
+# Ignore build output
+dist/
+
+# Ignore logs
+logs/
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+
+# Ignore test coverage reports
+coverage/
+
+# Ignore temporary files
+*.tmp
+
+# Ignore local storage files
+local_storage.json
+
+# Ignore sensitive configuration files
+config/secrets.json

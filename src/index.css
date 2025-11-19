@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilo base para que la app ocupe toda la pantalla */
+body, #root {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  background-color: theme('colors.turi.snow');
+  color: theme('colors.turi.stone');
+  font-family: 'Inter', sans-serif; /* Asumiendo Inter */
+}
