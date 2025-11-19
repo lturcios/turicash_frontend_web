@@ -68,10 +68,17 @@ const LoginPage = ({ onLogin }) => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-turi-blue-dark">
-      <div className="p-8 bg-white rounded-lg shadow-md w-96">
+    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-turi-blue-dark to-turi-blue-light">
+      <div className="p-8 bg-white rounded-2xl shadow-2xl w-96">
+        <div className="flex justify-center mb-6">
+          <img 
+            src="/src/assets/logo.png" 
+            alt="TuriCash Logo" 
+            className="w-32 h-32 object-contain"
+          />
+        </div>
         <h2 className="text-2xl font-bold text-center text-turi-blue-dark mb-6">
-          TuriCash Panel
+          Panel de Administración
         </h2>
         
         <form onSubmit={handleLogin} className="space-y-4">
@@ -100,9 +107,8 @@ const LoginPage = ({ onLogin }) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-turi-blue-dark"
               placeholder="Ingresa tu PIN"
               required
-              maxLength="6"
-              pattern="[0-9]*"
-              inputMode="numeric"
+              maxLength="8"
+              pattern="^[a-zA-Z]+$"
             />
           </div>
 
@@ -123,12 +129,14 @@ const LoginPage = ({ onLogin }) => {
 
         {/* Botón de testing - comentar en producción */}
         <div className="mt-4 pt-4 border-t border-gray-200">
+          {/*
           <button
             onClick={handleSimulatedLogin}
             className="w-full bg-gray-500 hover:bg-gray-600 text-white text-sm py-2 px-4 rounded-lg transition-colors"
           >
             Login Simulado (Testing)
           </button>
+          */}
         </div>
       </div>
     </div>
@@ -215,11 +223,20 @@ const Sidebar = ({ onLogout, sidebarOpen, setSidebarOpen }) => {
         transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         md:translate-x-0 transition-transform duration-300 ease-in-out
       `}>
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h1 className="text-2xl font-bold text-white">TuriCash</h1>
-          <button className="md:hidden text-gray-300" onClick={() => setSidebarOpen(false)}>
-            <X size={24} />
-          </button>
+        <div className="flex flex-col items-center p-4 border-b border-gray-700">
+          <div className="flex items-center justify-between w-full mb-3">
+            <div className="flex-1"></div>
+            <button className="md:hidden text-gray-300" onClick={() => setSidebarOpen(false)}>
+              <X size={24} />
+            </button>
+          </div>
+          <img 
+            src="/src/assets/logo.png" 
+            alt="TuriCash Logo" 
+            className="w-20 h-20 object-contain mb-2"
+          />
+          <h1 className="text-xl font-bold text-white">TuriCash</h1>
+          <p className="text-xs text-gray-400">Panel Admin</p>
         </div>
         
         <nav className="flex-1 p-4 space-y-2">

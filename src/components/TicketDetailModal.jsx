@@ -24,7 +24,7 @@ const TicketDetailModal = ({ ticket, onClose }) => {
     fetchDetails();
   }, [ticket]);
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     const doc = new jsPDF();
     
     // Colores de TuriCash
@@ -34,34 +34,60 @@ const TicketDetailModal = ({ ticket, onClose }) => {
     // ===== CABECERA =====
     // Fondo azul para la cabecera
     doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.rect(0, 0, 210, 45, 'F');
+    doc.rect(0, 0, 210, 50, 'F');
     
-    // Logo/Nombre de la empresa (texto blanco)
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
-    doc.text('TuriCash', 20, 20);
-    
-    // Subtítulo
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Sistema de Gestión de Ventas', 20, 28);
+    // Intentar cargar el logo
+    try {
+      const logoImg = await fetch('/src/assets/logo.png');
+      const logoBlob = await logoImg.blob();
+      const logoBase64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(logoBlob);
+      });
+      
+      // Agregar logo (30x30 en la esquina superior izquierda)
+      doc.addImage(logoBase64, 'PNG', 15, 10, 30, 30);
+      
+      // Nombre de la empresa (junto al logo)
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text('TuriCash', 50, 25);
+      
+      // Subtítulo
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Sistema de Gestión de Ventas', 50, 33);
+    } catch (error) {
+      console.error('Error loading logo:', error);
+      // Fallback sin logo
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text('TuriCash', 20, 20);
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Sistema de Gestión de Ventas', 20, 28);
+    }
     
     // Información del ticket en la cabecera
+    doc.setTextColor(255, 255, 255);
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text(`Ticket #${ticket.correlative_number}`, 20, 38);
+    doc.text(`Ticket #${ticket.correlative_number}`, 15, 45);
     
     // Fecha en la esquina derecha
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     const fecha = new Date(ticket.created_at_local);
-    doc.text(`Fecha: ${fecha.toLocaleDateString()}`, 150, 25, { align: 'right' });
-    doc.text(`Hora: ${fecha.toLocaleTimeString()}`, 150, 32, { align: 'right' });
+    doc.text(`Fecha: ${fecha.toLocaleDateString()}`, 195, 25, { align: 'right' });
+    doc.text(`Hora: ${fecha.toLocaleTimeString()}`, 195, 32, { align: 'right' });
     
     // ===== INFORMACIÓN DEL TICKET =====
     doc.setTextColor(0, 0, 0);
-    let yPos = 55;
+    let yPos = 60;
     
     // Título de sección
     doc.setFontSize(12);
