@@ -14,6 +14,7 @@ import {
 import ItemsPage from './pages/ItemsPage';
 import UsersPage from './pages/UsersPage';
 import LocationsPage from './pages/LocationsPage';
+import CategoriesPage from './pages/CategoriesPage';
 import DashboardPage from './pages/DashboardPage';
 import HistoryPage from './pages/HistoryPage';
 
@@ -166,6 +167,7 @@ const MainLayout = ({ onLogout }) => {
           <Routes>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/items" element={<ItemsPage />} />
+            <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/locations" element={<LocationsPage />} />
             <Route path="/history" element={<HistoryPage />} />
@@ -183,6 +185,7 @@ const Sidebar = ({ onLogout, sidebarOpen, setSidebarOpen }) => {
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/' },
     { name: 'Items', icon: Settings, path: '/items' },
+    { name: 'Categorías', icon: LayoutDashboard, path: '/categories' },
     { name: 'Usuarios', icon: Users, path: '/users' },
     { name: 'Ubicaciones', icon: MapPin, path: '/locations' },
     { name: 'Historial', icon: Ticket, path: '/history' },

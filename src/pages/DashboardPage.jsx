@@ -140,19 +140,19 @@ const DashboardPage = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <p className="text-sm opacity-90">Tickets</p>
-              <p className="text-2xl font-bold">{salesToday.ticket_count}</p>
+              <p className="text-2xl font-bold">{salesToday.ticket_count || 0}</p>
             </div>
             <div>
               <p className="text-sm opacity-90">Total Vendido</p>
-              <p className="text-2xl font-bold">${parseFloat(salesToday.total_sales).toFixed(2)}</p>
+              <p className="text-2xl font-bold">${parseFloat(salesToday.total_sales || 0).toFixed(2)}</p>
             </div>
             <div>
               <p className="text-sm opacity-90">Promedio</p>
-              <p className="text-2xl font-bold">${parseFloat(salesToday.avg_ticket).toFixed(2)}</p>
+              <p className="text-2xl font-bold">${parseFloat(salesToday.avg_ticket || 0).toFixed(2)}</p>
             </div>
             <div>
               <p className="text-sm opacity-90">Ticket Máximo</p>
-              <p className="text-2xl font-bold">${parseFloat(salesToday.max_ticket).toFixed(2)}</p>
+              <p className="text-2xl font-bold">${parseFloat(salesToday.max_ticket || 0).toFixed(2)}</p>
             </div>
           </div>
         </div>

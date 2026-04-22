@@ -1,45 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
-const ItemModal = ({ isOpen, onClose, onSave, item, locations }) => {
+const ItemModal = ({ isOpen, onClose, onSave, item, locations, categories }) => {
   const [formData, setFormData] = useState({
     name: '',
-    price: '',
+    base_price: '',
+    base_quantity: '',
     location_id: '',
+    category_id: '',
     icon_base64: null,
     is_active: true,
   });
   const [preview, setPreview] = useState(null);
+  const [filteredCategories, setFilteredCategories] = useState([]);
 
   // Cargar datos del item cuando se abre para editar
   useEffect(() => {
     if (item) {
       setFormData({
-        name: item.name,
-        price: item.price,
-        location_id: item.location_id,
-        icon_base64: null, // No reenviamos el base64 a menos que se cambie
-        is_active: item.is_active,
+        name: item.name || '',
+        base_price: item.base_price || item.price || '',
+        base_quantity: item.base_quantity || 0,
+        location_id: item.location_id || '',
+        category_id: item.category_id || '',
+        icon_base64: null,
+        is_active: item.is_active !== undefined ? item.is_active : true,
       });
-      setPreview(item.icon_base64); // Mostrar preview del ícono actual
+      setPreview(item.icon_base64);
     } else {
-      // Resetear para "Crear Nuevo"
       setFormData({
         name: '',
-        price: '',
+        base_price: '',
+        base_quantity: '',
         location_id: '',
+        category_id: '',
         icon_base64: null,
         is_active: true,
       });
       setPreview(null);
     }
-  }, [item, isOpen]); // Depender de isOpen para resetear el form
+  }, [item, isOpen]);
+
+  // Filtrar categorías por ubicación seleccionada
+  useEffect(() => {
+    if (formData.location_id && categories) {
+      const filtered = categories.filter(cat => cat.location_id == formData.location_id);
+      setFilteredCategories(filtered);
+      
+      // Si la categoría seleccionada no pertenece a la nueva ubicación, la reseteamos
+      if (formData.category_id) {
+        const currentCat = categories.find(c => c.id == formData.category_id);
+        if (currentCat && currentCat.location_id != formData.location_id) {
+          setFormData(prev => ({ ...prev, category_id: '' }));
+        }
+      }
+    } else {
+      setFilteredCategories([]);
+    }
+  }, [formData.location_id, categories]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === 'checkbox' ? (checked ? 1 : 0) : value,
     }));
   };
 
@@ -48,12 +72,11 @@ const ItemModal = ({ isOpen, onClose, onSave, item, locations }) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        // El resultado es un string base64
         setFormData((prev) => ({
           ...prev,
           icon_base64: reader.result,
         }));
-        setPreview(reader.result); // Mostrar preview del nuevo ícono
+        setPreview(reader.result);
       };
       reader.readAsDataURL(file);
     }
@@ -61,7 +84,16 @@ const ItemModal = ({ isOpen, onClose, onSave, item, locations }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
+    // Convertir a los tipos correctos antes de enviar
+    const payload = {
+      ...formData,
+      base_price: parseFloat(formData.base_price),
+      base_quantity: parseInt(formData.base_quantity),
+      location_id: parseInt(formData.location_id),
+      category_id: parseInt(formData.category_id),
+      is_active: formData.is_active ? 1 : 0
+    };
+    onSave(payload);
   };
 
   if (!isOpen) return null;
@@ -70,21 +102,15 @@ const ItemModal = ({ isOpen, onClose, onSave, item, locations }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
         <form onSubmit={handleSubmit}>
-          {/* Cabecera del Modal */}
           <div className="flex justify-between items-center p-4 border-b">
             <h3 className="text-xl font-semibold text-turi-blue-dark">
               {item ? 'Editar Item' : 'Crear Nuevo Item'}
             </h3>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-            >
+            <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
               <X size={24} />
             </button>
           </div>
 
-          {/* Cuerpo del Formulario */}
           <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
             <div>
               <label className="block text-sm font-medium text-gray-700">Nombre</label>
@@ -97,18 +123,33 @@ const ItemModal = ({ isOpen, onClose, onSave, item, locations }) => {
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-turi-blue-light focus:border-turi-blue-light"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Precio</label>
-              <input
-                type="number"
-                name="price"
-                step="0.01"
-                value={formData.price}
-                onChange={handleChange}
-                required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-turi-blue-light focus:border-turi-blue-light"
-              />
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Precio Base</label>
+                <input
+                  type="number"
+                  name="base_price"
+                  step="0.01"
+                  value={formData.base_price}
+                  onChange={handleChange}
+                  required
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-turi-blue-light focus:border-turi-blue-light"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Stock Inicial</label>
+                <input
+                  type="number"
+                  name="base_quantity"
+                  value={formData.base_quantity}
+                  onChange={handleChange}
+                  required
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-turi-blue-light focus:border-turi-blue-light"
+                />
+              </div>
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Ubicación</label>
               <select
@@ -124,6 +165,26 @@ const ItemModal = ({ isOpen, onClose, onSave, item, locations }) => {
                 ))}
               </select>
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Categoría</label>
+              <select
+                name="category_id"
+                value={formData.category_id}
+                onChange={handleChange}
+                required
+                disabled={!formData.location_id}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-turi-blue-light focus:border-turi-blue-light disabled:bg-gray-100 disabled:cursor-not-allowed"
+              >
+                <option value="">
+                  {!formData.location_id ? 'Seleccione primero una ubicación' : 'Seleccione una categoría'}
+                </option>
+                {filteredCategories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Ícono</label>
               <input
@@ -135,16 +196,16 @@ const ItemModal = ({ isOpen, onClose, onSave, item, locations }) => {
               {preview && (
                 <div className="mt-2">
                   <img src={preview} alt="Preview" className="w-20 h-20 object-cover rounded-md" />
-                  {item && !formData.icon_base64 && <span className="text-xs text-gray-500">Ícono actual. Seleccione un archivo para cambiarlo.</span>}
                 </div>
               )}
             </div>
+
              <div className="flex items-center">
               <input
                 type="checkbox"
                 name="is_active"
                 id="is_active"
-                checked={formData.is_active}
+                checked={!!formData.is_active}
                 onChange={handleChange}
                 className="h-4 w-4 text-turi-blue-dark border-gray-300 rounded focus:ring-turi-blue-dark"
               />
@@ -152,7 +213,6 @@ const ItemModal = ({ isOpen, onClose, onSave, item, locations }) => {
             </div>
           </div>
 
-          {/* Pie del Modal */}
           <div className="flex items-center justify-end p-4 border-t bg-gray-50 rounded-b-lg">
             <button
               type="button"
