@@ -54,13 +54,17 @@ const HistoryPage = () => {
   const fetchTickets = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams(filters);
-      // Eliminar params vacíos
+      // Limpiamos los filtros para no enviar strings vacíos
+      const cleanFilters = {};
       Object.keys(filters).forEach(key => {
-          if (!filters[key]) params.delete(key);
+        if (filters[key] !== '') {
+          cleanFilters[key] = filters[key];
+        }
       });
+
+      console.log("Enviando filtros al backend:", cleanFilters);
       
-      const response = await api.get(`/tickets?${params.toString()}`);
+      const response = await api.get('/tickets', { params: cleanFilters });
       setTickets(response.data);
     } catch (err) {
       console.error("Error loading tickets:", err);

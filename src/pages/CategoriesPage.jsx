@@ -64,6 +64,11 @@ const CategoriesPage = () => {
       if (currentCategory) {
         await api.put(`/categories/${currentCategory.id}`, categoryData);
       } else {
+        // Validación de seguridad: máximo 4 categorías
+        if (categories.length >= 4) {
+          alert("No puedes crear más de 4 categorías. El límite ha sido alcanzado.");
+          return;
+        }
         await api.post('/categories', categoryData);
       }
       fetchData();
@@ -86,6 +91,8 @@ const CategoriesPage = () => {
     }
   };
 
+  const isLimitReached = categories.length >= 4;
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -95,10 +102,15 @@ const CategoriesPage = () => {
         </div>
         <button
           onClick={() => handleOpenModal(null)}
-          className="bg-turi-green-dark hover:bg-turi-green-light text-white font-bold py-2 px-4 rounded-lg flex items-center transition-colors shadow-md"
+          disabled={isLimitReached}
+          className={`font-bold py-2 px-4 rounded-lg flex items-center transition-colors shadow-md ${
+            isLimitReached 
+              ? 'bg-gray-400 cursor-not-allowed text-gray-200' 
+              : 'bg-turi-green-dark hover:bg-turi-green-light text-white'
+          }`}
         >
           <Plus size={20} className="mr-2" />
-          Crear Categoría
+          {isLimitReached ? 'Límite alcanzado (4)' : 'Crear Categoría'}
         </button>
       </div>
 

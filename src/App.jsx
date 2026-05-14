@@ -167,7 +167,7 @@ const MainLayout = ({ onLogout }) => {
           <Routes>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/items" element={<ItemsPage />} />
-            {/* <Route path="/categories" element={<CategoriesPage />} /> */}
+            {<Route path="/categories" element={<CategoriesPage />} /> }
             <Route path="/users" element={<UsersPage />} />
             {/* <Route path="/locations" element={<LocationsPage />} /> */}
             <Route path="/history" element={<HistoryPage />} />
